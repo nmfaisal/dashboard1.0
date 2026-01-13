@@ -16,7 +16,7 @@ TRACE_LOG = BASE_DIR / "srv" / "data" / "trace_log.csv"
 # 🔴 THIS MUST RUN BEFORE to_csv
 TRACE_LOG.parent.mkdir(parents=True, exist_ok=True)
 
-def log_movement(item_id: str, location: str, status: str):
+def log_movement(item_id: str, location: str, status: str, model: str, substance: str):
     timestamp = datetime.now().isoformat(timespec="seconds")
 
     row = {
@@ -24,6 +24,8 @@ def log_movement(item_id: str, location: str, status: str):
         "item_id": item_id,
         "location": location,
         "status": status,
+        "model": model,
+        "substance": substance,
     }
 
     if TRACE_LOG.exists():
