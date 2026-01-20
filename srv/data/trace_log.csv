@@ -1,18 +1,21 @@
-timestamp,item_id,location,status
-2026-01-01T10:15:06,QR001,Test 1,confirmed
-2026-01-01T10:15:34,QR002,Test 1,confirmed
-2026-01-01T10:15:55,QR003,Test 1,confirmed
-2026-01-01T10:17:53,QR001,Test 2,confirmed
-2026-01-01T10:18:13,QR002,Test 2,Done
-2026-01-01T10:28:16,QR001,Test 3,completed
-2026-01-01T10:53:40,QR004,Test 1,confirmed
-2026-01-01T10:54:51,QR002,Test 3,completed
-2026-01-02T10:42:07,QR004,Test 1,processing
-2026-01-02T10:42:26,QE005,Test 1,processing
-2026-01-02T10:51:15,QR006,test 2,completed
-2026-01-02T10:51:32,QR007,Test 1,processing
-2026-01-02T17:23:51,QR008,Test 2,Processing
-2026-01-02T17:24:21,QR009,Test 1,processing
-2026-01-02T21:25:37,QR010,Test 3,Pending
-2026-01-02T21:25:50,QR011,Test 2,Pending
-2026-01-02T21:55:56,QR012,Test 1,processing
+timestamp,item_id,location,status,model,substance
+2026-01-01T10:15:06,QR001,Test 1,confirmed,,
+2026-01-01T10:15:34,QR002,Test 1,confirmed,,
+2026-01-01T10:15:55,QR003,Test 1,confirmed,,
+2026-01-01T10:17:53,QR001,Test 2,confirmed,,
+2026-01-01T10:18:13,QR002,Test 2,Done,,
+2026-01-01T10:28:16,QR001,Test 3,completed,,
+2026-01-01T10:53:40,QR004,Test 1,confirmed,,
+2026-01-01T10:54:51,QR002,Test 3,completed,,
+2026-01-02T10:42:07,QR004,Test 1,processing,,
+2026-01-02T10:42:26,QE005,Test 1,processing,,
+2026-01-02T10:51:15,QR006,test 2,completed,,
+2026-01-02T10:51:32,QR007,Test 1,processing,,
+2026-01-02T17:23:51,QR008,Test 2,Processing,,
+2026-01-02T17:24:21,QR009,Test 1,processing,,
+2026-01-02T21:25:37,QR010,Test 3,Pending,,
+2026-01-02T21:25:50,QR011,Test 2,Pending,,
+2026-01-02T21:55:56,QR012,Test 1,processing,,
+2026-01-13T16:49:43,QR001,FG,2000,-,-
+2026-01-15T10:15:09,5199ABAM**T250620YAALA03921,FG,2000,-,-
+2026-01-15T10:15:39,5199ABAM**T250620YAALA03921,FG,3000,-,-
