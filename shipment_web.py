@@ -1,9 +1,7 @@
 from scanner_base import create_scanner_app
 
 app = create_scanner_app(
-    fixed_location="SHIPMENT",
-    fixed_model= "model",
-    fixed_substance= "substance"
+    fixed_location="Shipment",
 )
 
 if __name__ == "__main__":

@@ -46,26 +46,85 @@ app.layout = html.Div(
 
         html.H1("📦 Process Tracing Dashboard"),
 
+        # # ----------------------
+        # # FILTER INPUTS
+        # # ----------------------
+        # dcc.Input(
+        #     id="search-item",
+        #     type="text",
+        #     placeholder="Scan / Enter Item ID",
+        #     style={"width": "300px", "fontSize": "16px"},
+        # ),
+
+        # html.Br(), html.Br(),
+
+        # dcc.Input(
+        #     id="search-model",
+        #     type="text",
+        #     placeholder="Enter Model (optional)",
+        #     style={"width": "300px", "fontSize": "16px"},
+        # ),
+
+        # html.Br(), html.Br(),
+
+        # html.Div([
+        #     html.Label("Start Date"),
+        #     dcc.DatePickerSingle(
+        #         id="start-date",
+        #         display_format="YYYY-MM-DD",
+        #     ),
+        #         ], style={"marginBottom": "10px"}),
+
+        # html.Div([
+        #     html.Label("End Date"),
+        #     dcc.DatePickerSingle(
+        #         id="end-date",
+        #         display_format="YYYY-MM-DD",
+        #     ),
+        #         ], style={"marginBottom": "20px"}),
         # ----------------------
-        # FILTER INPUTS
+        # FILTER INPUTS ROW 1
         # ----------------------
-        dcc.Input(
-            id="search-item",
-            type="text",
-            placeholder="Scan / Enter Item ID",
-            style={"width": "300px", "fontSize": "16px"},
+        html.Div(
+            style={"display": "flex", "gap": "20px", "alignItems": "center"},
+            children=[
+                dcc.Input(
+                    id="search-item",
+                    type="text",
+                    placeholder="Scan / Enter Item ID",
+                    style={"width": "250px", "fontSize": "16px"},
+                ),
+                dcc.DatePickerSingle(
+                    id="start-date",
+                    placeholder="Start Date",
+                    display_format="DD-MM-YYYY",
+                ),
+            ],
         ),
 
-        html.Br(), html.Br(),
+        html.Br(),
 
-        dcc.Input(
-            id="search-model",
-            type="text",
-            placeholder="Enter Model (optional)",
-            style={"width": "300px", "fontSize": "16px"},
+        # ----------------------
+        # FILTER INPUTS ROW 2
+        # ----------------------
+        html.Div(
+            style={"display": "flex", "gap": "20px", "alignItems": "center"},
+            children=[
+                dcc.Input(
+                    id="search-model",
+                    type="text",
+                    placeholder="Enter Model (optional)",
+                    style={"width": "250px", "fontSize": "16px"},
+                ),
+                dcc.DatePickerSingle(
+                    id="end-date",
+                    placeholder="End Date",
+                    display_format="DD-MM-YYYY",
+                ),
+            ],
         ),
 
-        html.Br(), html.Br(),
+
 
         dcc.Interval(id="refresh", interval=3000, n_intervals=0),
 
@@ -108,13 +167,25 @@ app.layout = html.Div(
     Input("refresh", "n_intervals"),
     Input("search-item", "value"),
     Input("search-model", "value"),
+    Input("start-date", "date"),
+    Input("end-date", "date"),
 )
-def update_table(_, item_id, selected_model):
+def update_table(_, item_id, selected_model, start_date, end_date):
+
 
     if not TRACE_LOG.exists():
         return [], [], "No trace data yet.", "", ""
 
     df = pd.read_csv(TRACE_LOG)
+    # df = pd.read_csv(TRACE_LOG)
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+
+    # Apply date filter if selected
+    if start_date:
+        df = df[df["timestamp"] >= pd.to_datetime(start_date)]
+
+    if end_date:
+        df = df[df["timestamp"] <= pd.to_datetime(end_date) + pd.Timedelta(days=1)]
 
     # Ensure quantity is numeric
     df["status"] = pd.to_numeric(df["status"], errors="coerce").fillna(0)
@@ -239,6 +310,52 @@ def update_table(_, item_id, selected_model):
 
         blocks = []
 
+        # =========================
+        # OVERALL MODEL TOTALS
+        # =========================
+        overall_qty = {
+            loc: int(df_filtered[df_filtered["location"] == loc]["status"].sum())
+            for loc in LOCATIONS
+        }
+
+        overall_block = html.Div(
+            style={
+                "border": "3px solid #2e86de",
+                "borderRadius": "12px",
+                "padding": "16px",
+                "marginBottom": "20px",
+                "backgroundColor": "#e8f0ff",
+            },
+            children=[
+                html.H3("📦 Model Overall Totals"),
+                html.Div([
+                    html.B("Model: "), selected_model,
+                ]),
+                html.Br(),
+                html.Table(
+                    style={"width": "100%", "textAlign": "center"},
+                    children=[
+                        html.Thead(
+                            html.Tr(
+                                [html.Th("Location")] +
+                                [html.Th(loc) for loc in LOCATIONS]
+                            )
+                        ),
+                        html.Tbody(
+                            html.Tr(
+                                [html.Td("Total Qty")] +
+                                [
+                                    html.Td(overall_qty[loc] if overall_qty[loc] > 0 else "-")
+                                    for loc in LOCATIONS
+                                ]
+                            )
+                        ),
+                    ],
+                ),
+            ],
+        )
+
+
         for item, df_item in df_filtered.groupby("item_id"):
             qty_by_location = {
                 loc: int(df_item[df_item["location"] == loc]["status"].sum())
@@ -286,8 +403,13 @@ def update_table(_, item_id, selected_model):
             )
 
         summary_view = html.Div(
-            children=[html.H3("📊 Status Summary"), *blocks]
+            children=[
+                html.H3("📊 Status Summary"),
+                overall_block,   # 👈 NEW overall totals first
+                *blocks          # existing per-item blocks
+            ]
         )
+
 
     return (
         df_filtered.to_dict("records"),
